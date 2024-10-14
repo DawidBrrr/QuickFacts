@@ -1,0 +1,19 @@
+body {
+    background-color: #f8f9fa;
+}
+
+h1 {
+    color: #007bff;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.btn {
+    margin-top: 10px;
+}
+
+.alert {
+    margin-top: 20px;
+}
