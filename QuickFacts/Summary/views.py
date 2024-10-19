@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from django.shortcuts import render
 from .forms import LinkForm
-from transformers import pipeline
-
+import torch
+from transformers import MBartForConditionalGeneration, MBart50Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
 def home(request):
     submitted_link = None   
     article_content = None  # To hold the scraped content
@@ -70,31 +70,61 @@ def home(request):
         'form': form,
     })
 
-def summarize_content(article_content):
-    # Initialize the summarization pipeline
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-    # Tokenize the content
-    inputs = summarizer.tokenizer(
-        article_content, 
-        return_tensors="pt", 
-        truncation=True, 
-        max_length=1024, 
-        padding="max_length"
+def summarize_chunk(chunk, model, tokenizer):
+    # Tokenize and summarize a chunk of the article
+    inputs = tokenizer(chunk, return_tensors="pt", max_length=1024, truncation=True)
+    summary_ids = model.generate(
+        inputs['input_ids'],
+        max_length=200,  # Adjust to control summary length for each chunk
+        min_length=50,
+        num_beams=4,
+        length_penalty=2.0,
+        early_stopping=True,
+        forced_bos_token_id=tokenizer.lang_code_to_id["pl_PL"]
     )
+    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary
 
-    # Check if input_ids is empty or has an invalid shape
-    if inputs['input_ids'].numel() == 0 or inputs['input_ids'].shape[1] > 1024:
-        raise ValueError("Input content is empty after tokenization or exceeds the token limit.")
+def split_into_chunks(text, max_length):
+    # Function to split the text into chunks of `max_length` tokens
+    words = text.split()  # Split text by whitespace
+    chunks = []
+    current_chunk = []
+    current_length = 0
     
-    # Generate the summary
-    try:
-        summary = summarizer(
-            article_content,
-            max_length=300,
-            min_length=30,
-            do_sample=False
-        )
-        return summary[0]['summary_text']
-    except Exception as e:
-        return f"Error during summarization: {str(e)}"
+    for word in words:
+        current_length += len(word) + 1  # Account for space between words
+        current_chunk.append(word)
+        
+        if current_length >= max_length:
+            chunks.append(" ".join(current_chunk))
+            current_chunk = []
+            current_length = 0
+    
+    if current_chunk:
+        chunks.append(" ".join(current_chunk))  # Add the last chunk
+    
+    return chunks
+
+def summarize_content(article_content):
+    # Load multilingual mBART model and tokenizer for Polish language support
+    mbart_model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
+    mbart_tokenizer = MBart50Tokenizer.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
+
+    # Set the source language for Polish
+    mbart_tokenizer.src_lang = "pl_PL"
+
+    # Split the article content into chunks (let's use 4000 tokens per chunk for BigBird)
+    chunks = split_into_chunks(article_content, max_length=4096)
+
+    # Summarize each chunk separately
+    summaries = []
+    for chunk in chunks:
+        summary = summarize_chunk(chunk, mbart_model, mbart_tokenizer)
+        summaries.append(summary)
+
+    # Combine all summaries into one final summary
+    final_summary = " ".join(summaries)
+    
+    return final_summary
