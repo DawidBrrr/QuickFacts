@@ -4,6 +4,7 @@ from django.shortcuts import render
 from .forms import LinkForm
 import torch
 from transformers import MBartForConditionalGeneration, MBart50Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
+
 def home(request):
     submitted_link = None   
     article_content = None  # To hold the scraped content
@@ -71,6 +72,8 @@ def home(request):
     })
 
 
+
+#SUMMARIZATION SECTION
 def summarize_chunk(chunk, model, tokenizer):
     # Tokenize and summarize a chunk of the article
     inputs = tokenizer(chunk, return_tensors="pt", max_length=1024, truncation=True)
