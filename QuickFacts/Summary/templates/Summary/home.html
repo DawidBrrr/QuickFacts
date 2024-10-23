@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proste Fakty</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %} Proste Fakty {% endblock %}
+
+{% block content %}
     <div class="container mt-5">
         <h1 class="text-center">Proste Fakty</h1>
 
@@ -32,5 +26,4 @@
         {% endif %}
 
     </div>
-</body>
-</html>
+{% endblock %}
