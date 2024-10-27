@@ -1,10 +1,11 @@
 body {
     background-color: #f8f9fa;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-footer{
+footer {
     background-color: #007bff;
-    color:#f8f9fa;
+    color: #f8f9fa;
     position: fixed;
     width: 100%;
     bottom: 0;
@@ -13,21 +14,22 @@ footer{
     padding: 30px 0;
 }
 
-header{
+header {
     background-color: #007bff;
-    color:#f8f9fa;
+    color: #f8f9fa;
     height: 50px;
     padding: 0 20px;
-
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+}
+.navbar {
+    width: 100%; 
 }
 
 h1 {
     color: #007bff;
     font-size: 4rem;
-    
 }
 
 .container {
@@ -35,57 +37,84 @@ h1 {
     margin-bottom: 70px;
 }
 
-/* .btn add */
+/* Primary Button Style */
 .btn-primary {
-    background-color: #007bff; 
+    background-color: #007bff;
     border-color: #007bff;
 }
 
-.alert {
-    margin-top: 20px;
+/* Dark Mode Toggle Button - No Outline */
+.btn-outline-light {
+    background: transparent; /* Light mode with no styling */
+    border: none; /* Removes outline */
+    color: inherit; /* Keeps button text color */
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Right align in flex layout */
+}
+
+/* Icon Style */
+#mode-icon {
+    width: 32px;
+    height: 32px;
+    transition: fill 0.3s ease;
 }
 
 /* Dark Mode Styles */
-
-body.dark-mode{
+body.dark-mode {
     background-color: #121212;
     color: #f8f9fa;
 }
-body.dark-mode header{
-    background-color: #0a2742 !important; 
+
+body.dark-mode header {
+    background-color: #0a2742 !important;
 }
-body.dark-mode footer{
+
+body.dark-mode footer {
     background-color: #0a2742 !important;
 }
 
 body.dark-mode h1 {
-    color: #f8f9fa; 
+    color: #f8f9fa;
 }
 
-body.dark-mode h2 {
-    color:#f8f9fa;
-}
-body.dark-mode pre{
-    color:#f8f9fa;
+
+body.dark-mode #mode-icon {
+    fill: #f8f9fa; 
 }
 
-body.dark-mode .btn-outline-light {
-    border-color: #0a2742; 
-    color: #f8f9fa; 
+body.dark-mode .btn-primary {
+    background-color: #0a2742;
+    border-color: #0a2742;
+}
+
+
+/* Reset the button styles to remove hover effects */
+#dark-mode-toggle {
+    background: transparent;  /* No background */
+    border: none;             /* No border */
+    box-shadow: none;         /* Remove shadow */
+    cursor: pointer;
     margin-left: auto;
     
 }
 
-body.dark-mode .btn-outline-light:hover {
-    background-color: #0a2742; 
-    color: #f8f9fa; 
+#dark-mode-toggle:hover,
+#dark-mode-toggle:focus {
+    background: transparent;  /* Prevents Bootstrap hover background */
+    box-shadow: none;         /* Prevents Bootstrap focus shadow */
 }
 
-body.dark-mode footer {
-    background-color: #0a2742 ;
+/* Hover effect specifically for the icon */
+#dark-mode-toggle #mode-icon {
+    transition: fill 0.3s ease;
 }
 
-body.dark-mode .btn-primary {
-    background-color: #0a2742; 
-    border-color: #0a2742;
+#dark-mode-toggle:hover #mode-icon {
+    fill: #ffd700; /* Change to a yellowish color on hover */
+}
+
+/* Dark Mode: SVG icon remains white */
+body.dark-mode #mode-icon {
+    fill: #f8f9fa;
 }
