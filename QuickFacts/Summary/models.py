@@ -1,3 +1,11 @@
 from django.db import models
 
-# Create your models here.
+class ArticleSummary(models.Model):
+    link = models.URLField(unique=True)
+    summary = models.TextField()
+
+    def __str__(self):
+        return self.link
+    
+
+    #TO DO implement check if exists in views.py
