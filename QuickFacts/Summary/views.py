@@ -2,71 +2,72 @@ import requests
 from bs4 import BeautifulSoup
 from django.shortcuts import render
 from .forms import LinkForm
+from .models import ArticleSummary
 import torch
 from transformers import MBartForConditionalGeneration, MBart50Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
-
+#TO DO summary not displayed in the app
 def home(request):
-    submitted_link = None   
-    article_content = None  # To hold the scraped content
-    summary = None  # To hold the summary
+    submitted_link = None
+    summary = None
 
     if request.method == 'POST':
         form = LinkForm(request.POST)
         if form.is_valid():
-            submitted_link = form.cleaned_data['link']  # Get the link
+            submitted_link = form.cleaned_data['link']
 
-            # Try to scrape the article content
-            try:
-                # Fetch the page content
-                response = requests.get(submitted_link)
-                response.raise_for_status()  # Raise an exception for HTTP errors
+            # Try to retrieve the existing summary, if available
+            article_summary = ArticleSummary.objects.filter(link=submitted_link).first()
 
-                # Parse the page content
-                soup = BeautifulSoup(response.content, 'html.parser')
+            if article_summary:  # Entry already exists
+                summary = article_summary.summary
+            else:
+                # Proceed with scraping and summarization if new entry
+                try:
+                    response = requests.get(submitted_link)
+                    response.raise_for_status()
 
-                # Attempt to find the article content
-                article = soup.find('article')  # Common tag for articles
-
-                if article:
-                    # Extract the paragraphs inside the article
-                    paragraphs = article.find_all('p')
-                    article_content = "\n\n".join([p.get_text() for p in paragraphs])
-                else:
-                    # If no <article> tag is found, try other common divs
-                    content_div = soup.find('div', class_='article-content')
-                    if content_div:
-                        paragraphs = content_div.find_all('p')
+                    # Parse the content
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                    article = soup.find('article')
+                    
+                    if article:
+                        paragraphs = article.find_all('p')
                         article_content = "\n\n".join([p.get_text() for p in paragraphs])
                     else:
-                        article_content = "No article content found at the provided URL."
+                        content_div = soup.find('div', class_='article-content')
+                        if content_div:
+                            paragraphs = content_div.find_all('p')
+                            article_content = "\n\n".join([p.get_text() for p in paragraphs])
+                        else:
+                            article_content = "No article content found at the provided URL."
 
-                # Handle empty content case
-                if not article_content or len(article_content.strip()) == 0:
-                    summary = "No content to summarize."
-                else:
-                    # Summarize the article content using Hugging Face Transformers
-                    summary = summarize_content(article_content)
+                    # Summarize if content is available
+                    if not article_content.strip():
+                        summary = "No content to summarize."
+                    else:
+                        summary = summarize_content(article_content)
 
-            except requests.exceptions.RequestException as e:
-                # Handle errors such as invalid URL or network issues
-                article_content = f"Error fetching the URL: {str(e)}"
-            except ValueError as ve:
-                summary = str(ve)
-            except Exception as e:
-                summary = f"An unexpected error occurred: {str(e)}"
+                        # Save the link and summary in the database
+                        article_summary = ArticleSummary(link=submitted_link, summary=summary)
+                        article_summary.save()
 
-            # Render the form with the submitted link, article content, and summary
+                except requests.exceptions.RequestException as e:
+                    summary = f"Error fetching the URL: {str(e)}"
+                except ValueError as ve:
+                    summary = str(ve)
+                except Exception as e:
+                    summary = f"An unexpected error occurred: {str(e)}"
+
+            # Render the form with the submitted link and summary
             return render(request, 'Summary/home.html', {
                 'form': form,
                 'submitted_link': submitted_link,
-                'article_content': article_content,
-                'summary': summary
+                'summary': summary,
             })
 
     else:
         form = LinkForm()
 
-    # Render the form when the request method is GET (initial load)
     return render(request, 'Summary/home.html', {
         'form': form,
     })

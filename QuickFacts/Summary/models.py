@@ -8,4 +8,4 @@ class ArticleSummary(models.Model):
         return self.link
     
 
-    #TO DO implement check if exists in views.py
+    
