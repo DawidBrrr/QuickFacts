@@ -5,7 +5,7 @@ from .forms import LinkForm
 from .models import ArticleSummary
 import torch
 from transformers import MBartForConditionalGeneration, MBart50Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
-#TO DO summary not displayed in the app
+
 def home(request):
     submitted_link = None
     summary = None

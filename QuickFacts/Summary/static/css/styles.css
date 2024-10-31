@@ -78,6 +78,10 @@ body.dark-mode h1 {
     color: #f8f9fa;
 }
 
+body.dark-mode pre {
+    color:#f8f9fa;
+}
+
 
 body.dark-mode #mode-icon {
     fill: #f8f9fa; 
