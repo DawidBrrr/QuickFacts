@@ -4,6 +4,7 @@ from django.shortcuts import render
 from .forms import LinkForm
 from .models import ArticleSummary
 import torch
+import torch_directml #For DirectML support
 from transformers import MBartForConditionalGeneration, MBart50Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
 
 def home(request):
@@ -75,9 +76,11 @@ def home(request):
 
 
 #SUMMARIZATION SECTION
-def summarize_chunk(chunk, model, tokenizer):
+def summarize_chunk(chunk, model, tokenizer, device):
     # Tokenize and summarize a chunk of the article
     inputs = tokenizer(chunk, return_tensors="pt", max_length=1024, truncation=True)
+    inputs = inputs.to(device)
+
     summary_ids = model.generate(
         inputs['input_ids'],
         max_length=200,  # Adjust to control summary length for each chunk
@@ -113,7 +116,22 @@ def split_into_chunks(text, max_length):
 
 def summarize_content(article_content):
     # Load multilingual mBART model and tokenizer for Polish language support
-    mbart_model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print("Using CUDA for GPU acceleration")
+    else:
+        """
+        #MEMORY ISSUE WITH DIRECTML
+        try:
+            device = torch_directml.device() #DirectML device for AMD GPUs
+            _ = torch.ones(1, device=device) #Check if DirectML available
+            print("Using DirectML for GPU acceleration")
+        except:
+        """
+        device = torch.device("cpu")
+        print("Only CPU available")
+    #Initialize mBART model (TO DO FIND BETTER MODEL)
+    mbart_model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt").to(device)
     mbart_tokenizer = MBart50Tokenizer.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")
 
     # Set the source language for Polish
@@ -125,7 +143,7 @@ def summarize_content(article_content):
     # Summarize each chunk separately
     summaries = []
     for chunk in chunks:
-        summary = summarize_chunk(chunk, mbart_model, mbart_tokenizer)
+        summary = summarize_chunk(chunk, mbart_model, mbart_tokenizer, device)
         summaries.append(summary)
 
     # Combine all summaries into one final summary
