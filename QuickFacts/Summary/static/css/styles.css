@@ -42,6 +42,9 @@ h1 {
     background-color: #007bff;
     border-color: #007bff;
 }
+pre {
+    font-size: 1.2rem;
+}
 
 /* Dark Mode Toggle Button - No Outline */
 .btn-outline-light {
@@ -80,6 +83,7 @@ body.dark-mode h1 {
 
 body.dark-mode pre {
     color:#f8f9fa;
+    font-size: 1.2rem;
 }
 
 

@@ -88,29 +88,30 @@ def summarize_chunk(chunk, model, tokenizer, device):
         num_beams=4,
         length_penalty=2.0,
         early_stopping=True,
-        forced_bos_token_id=tokenizer.lang_code_to_id["pl_PL"]
+        forced_bos_token_id=tokenizer.lang_code_to_id["pl_PL"],
+        temperature=1.0,
     )
     summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
     return summary
 
-def split_into_chunks(text, max_length):
-    # Function to split the text into chunks of `max_length` tokens
-    words = text.split()  # Split text by whitespace
+def split_into_chunks(text, max_length, tokenizer):
+    # Tokenize the entire text and split based on token length, not characters
+    tokens = tokenizer.encode(text, truncation=False)
     chunks = []
     current_chunk = []
     current_length = 0
     
-    for word in words:
-        current_length += len(word) + 1  # Account for space between words
-        current_chunk.append(word)
+    for token in tokens:
+        current_length += 1
+        current_chunk.append(token)
         
         if current_length >= max_length:
-            chunks.append(" ".join(current_chunk))
+            chunks.append(tokenizer.decode(current_chunk, skip_special_tokens=True))
             current_chunk = []
             current_length = 0
     
     if current_chunk:
-        chunks.append(" ".join(current_chunk))  # Add the last chunk
+        chunks.append(tokenizer.decode(current_chunk, skip_special_tokens=True))  # Add the last chunk
     
     return chunks
 
@@ -120,6 +121,7 @@ def summarize_content(article_content):
         device = torch.device("cuda")
         print("Using CUDA for GPU acceleration")
     else:
+
         """
         #MEMORY ISSUE WITH DIRECTML
         try:
@@ -128,6 +130,7 @@ def summarize_content(article_content):
             print("Using DirectML for GPU acceleration")
         except:
         """
+
         device = torch.device("cpu")
         print("Only CPU available")
     #Initialize mBART model (TO DO FIND BETTER MODEL)
@@ -138,7 +141,7 @@ def summarize_content(article_content):
     mbart_tokenizer.src_lang = "pl_PL"
 
     # Split the article content into chunks (let's use 4000 tokens per chunk for BigBird)
-    chunks = split_into_chunks(article_content, max_length=4096)
+    chunks = split_into_chunks(article_content, max_length=4096,tokenizer=mbart_tokenizer)
 
     # Summarize each chunk separately
     summaries = []
