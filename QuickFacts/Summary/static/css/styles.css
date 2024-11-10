@@ -97,7 +97,7 @@ body.dark-mode .btn-primary {
 }
 
 
-/* Reset the button styles to remove hover effects */
+/* Reset the dark-mode-toggle styles to remove hover effects */
 #dark-mode-toggle {
     background: transparent;  /* No background */
     border: none;             /* No border */
