@@ -2,6 +2,7 @@ from django import forms
 
 class LinkForm(forms.Form):
     link = forms.URLField(
+        label='Wprowadź link do artykułu',
         max_length=255,
         widget=forms.TextInput(attrs={
             'placeholder': 'Wprowadź link',
