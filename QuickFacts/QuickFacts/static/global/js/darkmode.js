@@ -4,8 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const icon = document.getElementById('mode-icon');
     
     // Define paths for icons
-    const sunIconPath = "/static/images/sun-icon.svg";
-    const moonIconPath = "/static/images/moon-icon.svg";
+    const sunIconPath = "/static/global/images/sun-icon.svg";
+    const moonIconPath = "/static/global/images/moon-icon.svg";
 
 
     // Check for saved preference in localStorage

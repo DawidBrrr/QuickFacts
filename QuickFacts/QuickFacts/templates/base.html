@@ -6,8 +6,9 @@
     <title>{% block title %} Proste Fakty {% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/global.css' %}">
-    <script defer src="{% static 'js/darkmode.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'global/css/global.css' %}">
+    {% block extra_css %}{% endblock %}
+    <script defer src="{% static 'global/js/darkmode.js' %}"></script>
 </head>
 <body>
     <header class="bg-primary p-3">
@@ -22,7 +23,7 @@
             </div>
             <!-- Dark Mode Button -->
             <button id="dark-mode-toggle" class="btn btn-outline-light">
-                <img id="mode-icon" src="{% static 'images/sun-icon.svg' %}" alt="Tryb Ciemny" width="20" height="20">
+                <img id="mode-icon" src="{% static 'global/images/sun-icon.svg' %}" alt="Tryb Ciemny" width="20" height="20">
             </button>
         </nav> 
     </header>
