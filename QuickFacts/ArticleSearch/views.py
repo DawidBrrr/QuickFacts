@@ -13,4 +13,5 @@ def search_articles(request):
 
     if query:
         results = ArticleSummary.objects.filter(title__icontains=query).values('id', 'title', 'link')
+
     return JsonResponse(list(results), safe=False)

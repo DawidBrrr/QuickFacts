@@ -1,4 +1,3 @@
-//FIX 
 document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('search-bar');
     const resultsContainer = document.getElementById('search-results');
@@ -10,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only make a request if there is text in the search bar
         if (query.length > 0) {
             // Make the fetch request to the search endpoint with the query
-            fetch(`/search/?q=${encodeURIComponent(query)}`)
+            fetch(`search_articles/?q=${encodeURIComponent(query)}`)
                 .then(response => {
                     // Check if the response is successful
                     if (!response.ok) {
