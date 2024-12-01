@@ -60,6 +60,32 @@ def home(request):
                 'article_title': article_title,
                 'summary': summary,
             })
+        
+    # Handling GET request, where article_id is passed via query params
+    elif request.method == 'GET':
+        article_id = request.GET.get('article_id')
+        if article_id:
+            #Try to get the article based on id
+            article_summary = ArticleSummary.objects.filter(id=article_id).first()
+            if article_summary:
+                summary = article_summary.summary
+                article_title = article_summary.title
+            else:
+                summary = "Nie znaleziono artykułu"
+            
+        else:
+            article_title = None
+            summary = None
+            
+        return render(request, 'Summary/home.html', {
+            'form': LinkForm(), #Show the form again
+            'submitted_link': None, # no link to show
+            'article_title': article_title,
+            'summary': summary,
+        })
+            
+        
+        
 
     else:
         form = LinkForm()

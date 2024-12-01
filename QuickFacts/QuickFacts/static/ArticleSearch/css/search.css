@@ -1,0 +1,25 @@
+h2{
+    padding-bottom: 20px;
+}
+.list-group-item a {
+    color: black !important;
+}
+.list-group-item:hover{
+    background-color: rgb(232, 243, 250);
+    font-weight: bold;
+    transition: 0.1s;
+    text-decoration: none;
+}
+
+body.dark-mode .list-group-item{
+    background-color: #9999998f;
+    border-color: #121212;
+}
+
+body.dark-mode .list-group-item a{
+    color: #f8f9fa !important;
+}
+
+body.dark-mode .list-group-item:hover{
+    background-color: #99999957;
+}

@@ -10,9 +10,16 @@
     <div class="container-mt5">
 
         <h2 class="text-center">Wyszukaj artykuł</h2>
-
-        <input type="text" id="search-bar" placeholder="Wpisz tytuł artykułu...">
-        <ul id="search-results"></ul>
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="search-bar"
+                class="form-control"
+                placeholder="Wpisz tytuł artykułu..."
+                
+            />
+        </div>
+        <ul id="search-results" class="list-group mt-3"></ul>
         <script src="{% static 'ArticleSearch/js/scripts.js' %}"></script>
 
 

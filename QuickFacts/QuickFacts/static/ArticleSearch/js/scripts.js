@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.length > 0) {
                         data.forEach(item => {
                             const li = document.createElement('li');
-                            li.innerHTML = `<a href="${item.link}">${item.title}</a>`;
+                            li.innerHTML = `<a href="/?article_id=${item.id}" class="text-decoration-none">${item.title}</a>`;
+                            li.className = 'list-group-item d-flex justify-content-between align-items-center'; 
                             resultsContainer.appendChild(li);
                         });
                     } else {
